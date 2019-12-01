@@ -98,8 +98,6 @@ class RBM:
         return sum(sum(rbm_w * visible_state * hidden_state)) / columns(visible_state)
 
     def configuration_goodness_gradient(self, visible_state, hidden_state):
-        print("visible shape", visible_state.shape)
-        print("hidden shape", hidden_state.shape)
         return np.divide(np.matmul(hidden_state, visible_state.T), visible_state.shape[1])
 
     """def show_rbm(self, rbm_w):
@@ -162,7 +160,6 @@ def main():
     lr_rbm = .02
     n_iterations = 10
     dataset = load_data(filename)
-    print(dataset.inputs.shape)
     #print(dataset.inputs)
     #print(dataset.targets)
     model = rbm.optimize(rbm.cd1, dataset, lr_rbm, n_iterations)
