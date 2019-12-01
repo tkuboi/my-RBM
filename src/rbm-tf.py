@@ -1,9 +1,9 @@
-import tensorflow as tf 
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import numpy as np 
-from tensorflow.examples.tutorials.mnist import input_data 
 
 class RBM():
-    def __init__(self, nv=28*28, nh=512, cd_steps=3):
+    def __init__(self, nv=30*30, nh=1800, cd_steps=3):
         self.graph = tf.Graph() 
         with self.graph.as_default(): 
             self.W = tf.Variable(tf.truncated_normal((nv, nh)) * 0.01)
@@ -36,7 +36,8 @@ class RBM():
         return i+1, k, vk
     
     def train(self, X, lr=0.01, batch_size=64, epochs=5):
-        with self.graph.as_default(): 
+        with self.graph.as_default():
+            print(self.bv.shape)
             tf_v = tf.placeholder(tf.float32, [batch_size, self.bv.shape[0]])
             v = tf.round(tf_v) 
             vk = tf.identity(v)
@@ -69,7 +70,7 @@ def main():
     import sys
     filename = sys.argv[1]
     data = load_data(filename)
-    data = data.inputs
+    data = data.inputs.T
     rbm = RBM(nv=30*30, nh=1800, cd_steps=3)
     rbm.train(X=data, lr=0.001, epochs=25)
 
