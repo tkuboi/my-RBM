@@ -54,8 +54,9 @@ class RBM:
         mini_batch_size = 100
         start_of_next_mini_batch = 0 
         for iteration_number in range(1, n_iterations):
+            print(start_of_next_mini_batch)
             mini_batch = self.extract_mini_batch(training_data, start_of_next_mini_batch, mini_batch_size)
-            start_of_next_mini_batch = start_of_next_mini_batch + mini_batch_size % training_data.inputs.shape[1]
+            start_of_next_mini_batch = (start_of_next_mini_batch + mini_batch_size) % training_data.inputs.shape[1]
             gradient = gradient_function(model, mini_batch.inputs)
             momentum_speed = 0.9 * momentum_speed + gradient
             model = model + momentum_speed * learning_rate
@@ -97,7 +98,9 @@ class RBM:
         return sum(sum(rbm_w * visible_state * hidden_state)) / columns(visible_state)
 
     def configuration_goodness_gradient(self, visible_state, hidden_state):
-        return (hidden_state * visible_state.T) / visible_state.shape[1] 
+        print("visible shape", visible_state.shape)
+        print("hidden shape", hidden_state.shape)
+        return np.divide(np.matmul(hidden_state, visible_state.T), visible_state.shape[1])
 
     """def show_rbm(self, rbm_w):
         n_hid = rbm_w.shape(1)
@@ -137,8 +140,8 @@ def load_data(filename):
     inputs = []
     with open(filename) as fo:
         for line in fo:
-            items = line.split('\t')
-            inputs.extend([to_vector(item) for item in items])
+            items = line.split()
+            inputs.extend([to_vector(item.replace('\n', '')) for item in items])
     return Dataset(np.array(inputs).T, np.array(inputs).T) 
 
 def to_vector(word):
@@ -154,12 +157,12 @@ def to_vector(word):
 
 def main():
     filename = sys.argv[1]
-    n_hid = 300
+    n_hid = 2700
     rbm = RBM(n_hid)
     lr_rbm = .02
     n_iterations = 10
     dataset = load_data(filename)
-    #print(dataset.inputs.shape)
+    print(dataset.inputs.shape)
     #print(dataset.inputs)
     #print(dataset.targets)
     model = rbm.optimize(rbm.cd1, dataset, lr_rbm, n_iterations)
