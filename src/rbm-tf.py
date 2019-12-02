@@ -71,8 +71,25 @@ def main():
     filename = sys.argv[1]
     data = load_data(filename)
     data = data.inputs.T
-    rbm = RBM(nv=30*30, nh=1800, cd_steps=3)
-    rbm.train(X=data, lr=0.001, epochs=25)
+    rbm0 = RBM(nv=30*30, nh=1800, cd_steps=3)
+    rbm0.train(X=data, lr=0.001, epochs=22)
+    print(rbm0.modelW)
+    rbm1 = RBM(nv=1800, nh=900, cd_steps=3)
+    rbm1.train(X=rbm0.modelW, lr=0.001, epochs=70)
+    print(rbm1.modelW)
+    rbm2 = RBM(nv=900, nh=450, cd_steps=3)
+    rbm2.train(X=rbm1.modelW, lr=0.001, epochs=90)
+    print(rbm2.modelW)
+    rbm3 = RBM(nv=450, nh=225, cd_steps=3)
+    rbm3.train(X=rbm2.modelW, lr=0.001, epochs=100)
+    print(rbm3.modelW)
+    rbm4 = RBM(nv=225, nh=112, cd_steps=3)
+    rbm4.train(X=rbm3.modelW, lr=0.001, epochs=250)
+    print(rbm4.modelW)
+    rbm5 = RBM(nv=112, nh=60, cd_steps=3)
+    rbm5.train(X=rbm4.modelW, lr=0.001, epochs=500)
+    print(rbm5.modelW)
+
 
 if __name__ == '__main__':
     main()
