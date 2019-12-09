@@ -4,9 +4,11 @@ import numpy as np
 
 class RBM():
     def __init__(self, nv=30*30, nh=1800, cd_steps=3):
-        self.graph = tf.Graph() 
+        self.graph = tf.Graph()
+        self.nv = nv
+        self.nh = nh
         with self.graph.as_default(): 
-            self.W = tf.Variable(tf.truncated_normal((nv, nh)) * 0.01)
+            self.W = tf.Variable(tf.truncated_normal((nv, nh)) * 0.01, name='vh_weights')
             self.bv = tf.Variable(tf.zeros((nv, 1))) 
             self.bh = tf.Variable(tf.zeros((nh, 1)))
             
@@ -35,7 +37,7 @@ class RBM():
         vk = self.sample_v(hk)
         return i+1, k, vk
     
-    def train(self, X, lr=0.01, batch_size=64, epochs=5):
+    def train(self, X, lr=0.01, batch_size=64, epochs=5, modelname='vh_weights'):
         with self.graph.as_default():
             print(self.bv.shape)
             tf_v = tf.placeholder(tf.float32, [batch_size, self.bv.shape[0]])
@@ -53,7 +55,8 @@ class RBM():
             loss = self.energy(v) - self.energy(vk) 
             optimizer = tf.train.AdamOptimizer(lr).minimize(loss)
             init = tf.global_variables_initializer()
-        
+       
+        saver = tf.train.Saver([self.W])
         with tf.Session(graph=self.graph) as sess:
             init.run()
             for epoch in range(epochs): 
@@ -64,6 +67,7 @@ class RBM():
                     losses.append(l)
                 print('Epoch Cost %d: ' % (epoch), np.mean(losses))
             self.modelW = self.W.eval()
+            saver.save(sess, modelname + str(self.nh))
 
 def main():
     from utils import load_data
